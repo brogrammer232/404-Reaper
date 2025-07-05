@@ -12,6 +12,7 @@ This tool follows the principle of minimal friction. It doesn't try to be overly
 + [Features](#features)
     - [Core Functionality](#core-functionality)
         - [Sample Output](#sample-output)
+    - [Planned CLI Options](#planned-cli-options)
     - [Future Features](#future-features)
 + [File Handling Rules](#file-handling-rules)
     - [Index Files](#index-files)
@@ -66,6 +67,21 @@ As repositories grow, manually maintaining index files and checking for broken l
 ### notes/registers.md
 
 + Line 5: `[Stack Info](stack/overview.md)`
+```
+
+### Planned CLI Options
+
+```
+link-checker [options]
+
+Options:
+  --fix                        Enable fixing broken links
+  --fix-mode=[line|link]      Choose whether to delete the full line or just the link
+  --summary=SUMMARY.md        Path to main index file
+  --report=report.md          Output file for detailed report
+  --dry-run                   Perform checks without making any changes
+  --ignore=path1,path2,...    Comma-separated list of paths to ignore
+  -v, --verbose               Change output.
 ```
 
 ### Future Features
