@@ -1,5 +1,5 @@
-from typing import Union
 from pathlib import Path
+from typing import Union
 
 EXCLUDED_SUFFIXES = (".bin",)
 
@@ -16,11 +16,11 @@ def get_human_readable_files(path: Union[str, Path]) -> list[Path]:
     :return: List of pathlib.Path objects.
     """
 
-    # Type checking.
+    # Check parameter type.
     if not isinstance(path, (str, Path)):
         raise ValueError("Expected str or pathlib.Path for `path`.")
 
-    # Getting human-readable files.
+    # Get human-readable files.
     path = Path(path)
 
     files = [
