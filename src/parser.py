@@ -1,28 +1,27 @@
 """
 This module should take a markdown file and return a list of links in the file.
 
-Return the following links:
+Includes the following links:
     + Links to other files: '[File](file.md)'
-    + Links to images: '![Image](image.png)'
+    + Links to images:      '![Image](image.png)'
+    + Section links:        '[Section](#section)'
 
-Section links will come soon.
-
-Algorithm:
-    1. Read the file.
-    2. Use `markdown-it-py` to extract the links.
-    3. Return the links.
+The `extract_links_from_file()` function returns a list of tuples with the following
+format: [(link_text, link), ...]
 """
+
 from markdown_it import MarkdownIt
 from pathlib import Path
-from typing import Union
+from typing import Union, List, Tuple
 
-def get_links(file: Union[str, Path]) -> list[tuple]:
+def extract_links_from_file(file: Union[str, Path]) -> List[Tuple[str, str]]:
     """
     Extract and return links from the given file.
 
-    Only includes:
+    Includes:
     + Links to other text files.
     + Links to images.
+    + Section links.
     
     :param file: A string or pathlib.Path object representing the file to extract links from.
     :return: A list of tuples with this format: (link_text, link).
@@ -32,12 +31,12 @@ def get_links(file: Union[str, Path]) -> list[tuple]:
     if not isinstance(file, (str, Path)):
         raise ValueError("Expected str or pathlib.Path for `file`.")
 
-    # Get file contents.
+    #  Read markdown content from file as UTF-8 text.
     file = Path(file)
     file_contents = read_file(file)
 
-    # Extract links.
-    links = extract_links(file_contents)
+    # Extract links from markdown text.
+    links = extract_links_from_text(file_contents)
 
     return links
 
@@ -49,13 +48,14 @@ def read_file(file: Path) -> str:
     :return: A string containing the contents of the given file.
     """
 
-    # Error handling.
+    # Confirm the file exists.
     if not file.is_file():
-        raise FileNotFoundError("The given file doesn't exist.")
+        raise FileNotFoundError(f"File not found: {file}")
 
+    # Read and return file contents.
     return file.read_text(encoding = "utf-8")
 
-def extract_links(text: str) -> list[tuple]:
+def extract_links_from_text(text: str) -> List[Tuple[str, str]]:
     """
     Extract links from the given text.
 
@@ -73,14 +73,17 @@ def extract_links(text: str) -> list[tuple]:
 
         children_iter = iter(token.children)
         for child in children_iter:
+            # Get section links and links to text files.
             if child.type == "link_open":
                 link = child.attrGet("href")
+                if not link: continue
                 
                 text_token = next(children_iter, None)
-                text = text_token.content if text_token and text_token.type == "text" else ""
+                text = text_token.content.strip() if text_token and text_token.type == "text" else "no link text"
 
                 links.append((text, link))
 
+            # Get image links.
             elif child.type == "image":
                 src = child.attrGet("src")
                 alt = child.attrGet("alt") or "no alt text"
