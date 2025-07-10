@@ -1,5 +1,5 @@
 from scanner import get_human_readable_files
-from parser import get_links
+from parser import extract_links_from_file
 from pathlib import Path
 
 # Test scanner.
@@ -8,9 +8,11 @@ from pathlib import Path
 # for file in files: print(file)
 
 # Test parser.
-test_file1 = Path("./repo_clone/SUMMARY.md")
-test_file2 = Path("./test.md")
-links = get_links(test_file1)
+# test_file1 = Path("./repo_clone/SUMMARY.md")
+# test_file2 = Path("./test.md")
+# links = extract_links_from_file(test_file1)
 
-for link in links:
-    print(link)
+# for link in links:
+#     print(link)
+
+# Test validator.
