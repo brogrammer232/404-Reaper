@@ -1,13 +1,18 @@
 """
-This module should take a markdown file and return a list of links in the file.
+Parses a Markdown file and extracts all relevant links.
 
-Includes the following links:
-    + Links to other files: '[File](file.md)'
-    + Links to images:      '![Image](image.png)'
-    + Section links:        '[Section](#section)'
+Currently supports:
+    - Links to other files: [File](file.md)
+    - Image links:          ![Image](image.png)
+    - Section links:        [Section](#section)
 
-The `extract_links_from_file()` function returns a list of tuples with the following
-format: [(link_text, link), ...]
+The primary function, `extract_links_from_file()`, returns a list of tuples
+with the following structure:
+
+    (link_text, link_target)
+
+Example:
+    [("Registers", "assembly/registers.md"), ("no alt text", "img/cpu.png")]
 """
 
 from markdown_it import MarkdownIt
