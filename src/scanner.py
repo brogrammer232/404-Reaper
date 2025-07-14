@@ -24,10 +24,10 @@ def get_human_readable_files(path: Union[str, Path]) -> list[Path]:
     path = Path(path)
 
     files = [
-        item for item in path.rglob("*")    # Get all files and directories.
-        if item.is_file()                   # Remove all directories.
+        item for item in path.rglob("*")                            # Get all files and directories.
+        if item.is_file()                                           # Remove all directories.
         and not any(part.startswith('.') for part in item.parts)    # Remove hidden files and files in hidden folders.
-        and item.suffix not in EXCLUDED_SUFFIXES      # Remove files with unwanted extensions.
+        and item.suffix not in EXCLUDED_SUFFIXES                    # Remove files with unwanted extensions.
     ]
 
     return files
