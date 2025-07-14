@@ -9,10 +9,10 @@ def get_human_readable_files(path: Union[str, Path]) -> list[Path]:
 
     Only includes:
     + Regular files (no directories).
-    + Non-hidden files (no dotfiles or files in hidden folders).
-    + Files with extensions not in the EXCLUDED_SUFFIXES list.
+    + Non-hidden files (no dotfiles or files in hidden folders like '.git').
+    + Files with extensions not in the EXCLUDED_SUFFIXES tuple.
 
-    :param path: A string or pathlib.Path object representing the root directory.
+    :param path: A string or pathlib.Path object representing the repository's root directory.
     :return: List of pathlib.Path objects.
     """
 
