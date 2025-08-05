@@ -1,9 +1,9 @@
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
-EXCLUDED_SUFFIXES = (".bin",)
+EXCLUDED_SUFFIXES = (".bin", ".img")
 
-def get_human_readable_files(path: Union[str, Path]) -> list[Path]:
+def get_human_readable_files(path: Union[str, Path]) -> List[Path]:
     """
     Return a list of human-readable files under the given path.
 
