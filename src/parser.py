@@ -22,11 +22,6 @@ from typing import Union, List, Tuple
 def extract_links_from_file(file: Union[str, Path]) -> List[Tuple[str, str]]:
     """
     Extract and return links from the given file.
-
-    Includes:
-    + Links to other text files.
-    + Links to images.
-    + Section links.
     
     :param file: A string or pathlib.Path object representing the file to extract links from.
     :return: A list of tuples with this format: (link_text, link).
