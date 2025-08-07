@@ -1,3 +1,8 @@
+"""
+Fix this issues:
+    1. Raise an error is the given path does not exist.
+"""
+
 from pathlib import Path
 from typing import Union, List
 
