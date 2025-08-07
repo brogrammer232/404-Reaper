@@ -1,5 +1,5 @@
 """
-Fix this issues:
+Fix these issues:
     1. Raise an error is the given path does not exist.
 """
 
