@@ -22,7 +22,7 @@ from parser import extract_links_from_file
 from typing import Union, List
 from pathlib import Path
 
-def get_missing_files(index_file: Union[str, Path]) -> List[str]:
+def get_unreferenced_files(index_file: Union[str, Path], recursive: bool = True) -> List[str]:
 
     index_file = Path(index_file)
     target_directory = index_file.parent
@@ -34,26 +34,29 @@ def get_missing_files(index_file: Union[str, Path]) -> List[str]:
     ## and remove the index file.
     human_readable_files = [
             "./" + str(file.relative_to(target_directory))
-            for file in human_readable_files[:]
+            for file in human_readable_files
             if file.name != index_file.name
         ]
 
     # Extract links from the given index file.
-    referenced_links = extract_links_from_file(index_file)
-
-    ## Extract the link targets and dispose off the link text.
     referenced_links = [
-            link[-1] if link[-1].startswith("./") else f"./{link[-1]}"
-            for link in referenced_links[:]
+            normalize_link_target(link)
+            for link in extract_links_from_file(index_file)
         ]
 
     # Get missing files.
-    human_readable_files_num = len(human_readable_files)
-    referenced_files_num = len(referenced_links)
-    missing_files_number = human_readable_files_num - referenced_files_num
-
-    print(f"{missing_files_number} files missing in `{index_file.name}`.")
-
     missing_files = list(set(human_readable_files) - set(referenced_links))
 
+    missing_files_num = len(missing_files)
+    print(f"{missing_files_num} files missing in `{index_file.name}`.")
+    
     return missing_files
+
+def normalize_link_target(link_tuple):
+    """
+    This function returns a string of the link target.
+    It ensures that the link target starts with "./".
+    """
+
+    target = link_tuple[-1]
+    return target if target.startswith("./") else f"./{target}"
