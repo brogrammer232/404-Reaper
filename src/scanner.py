@@ -1,6 +1,7 @@
 """
-Fix these issues:
+Add these features:
     1. Raise an error if the given path does not exist.
+    2. Have an option to return only the link target without the link text.
 """
 
 from pathlib import Path
