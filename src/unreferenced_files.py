@@ -24,23 +24,27 @@ from pathlib import Path
 
 def get_unreferenced_files(index_file: Union[str, Path], recursive: bool = True) -> List[str]:
 
+    # Check parameter type.
+    if not isinstance(index_file, (str, Path)):
+        raise ValueError("Expected str or pathlib.Path for `index_file`.")
+
     index_file = Path(index_file)
     target_directory = index_file.parent
 
-    # Get human-readable files in the repo.
-    human_readable_files = get_human_readable_files(target_directory)
-    
-    ## Convert paths to string, express relative to the target directory,
-    ## and remove the index file.
+    # Get human-readable files in the repo,
+    # express path relative to the target directory,
+    # convert path to string,
+    # normalize the path,
+    # and remove the index file.
     human_readable_files = [
-            "./" + str(file.relative_to(target_directory))
-            for file in human_readable_files
+            normalize_link_target(str(file.relative_to(target_directory)))
+            for file in get_human_readable_files(target_directory)
             if file.name != index_file.name
         ]
 
-    # Extract links from the given index file.
+    # Extract and normalize links from the given index file.
     referenced_links = [
-            normalize_link_target(link)
+            normalize_link_target(link[-1])
             for link in extract_links_from_file(index_file)
         ]
 
@@ -52,11 +56,8 @@ def get_unreferenced_files(index_file: Union[str, Path], recursive: bool = True)
     
     return missing_files
 
-def normalize_link_target(link_tuple):
+def normalize_link_target(link: str) -> str:
     """
-    This function returns a string of the link target.
-    It ensures that the link target starts with "./".
+    This function ensures that the given link starts with "./".
     """
-
-    target = link_tuple[-1]
-    return target if target.startswith("./") else f"./{target}"
+    return link if link.startswith("./") else f"./{link}"
