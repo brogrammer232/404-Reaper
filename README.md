@@ -87,6 +87,7 @@ Options:
 ### Future Features
 
 + Check for broken section links (e.g., `#heading-one`).
++ Detect duplicate links in main index files.
 + GitHub remote repo scanning.
 + Auto-sorting index entries.
 + GitHub Action for CI-based link validation.
