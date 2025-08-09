@@ -5,11 +5,14 @@ Add these features:
 """
 
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Tuple, Optional
 
 EXCLUDED_SUFFIXES = (".bin", ".img")
 
-def get_human_readable_files(path: Union[str, Path]) -> List[Path]:
+def get_human_readable_files(
+        path: Union[str, Path],
+        target_extensions: Optional[Tuple[str]] = None
+    ) -> List[Path]:
     """
     Return a list of human-readable files under the given path.
 
@@ -29,11 +32,20 @@ def get_human_readable_files(path: Union[str, Path]) -> List[Path]:
     # Get human-readable files.
     path = Path(path)
 
-    files = [
-        item for item in path.rglob("*")                            # Get all files and directories.
-        if item.is_file()                                           # Remove all directories.
-        and not any(part.startswith('.') for part in item.parts)    # Remove hidden files and files in hidden folders.
-        and item.suffix not in EXCLUDED_SUFFIXES                    # Remove files with unwanted extensions.
-    ]
+    if target_extensions == None:
+        files = [
+            item for item in path.rglob("*")                            # Get all files and directories.
+            if item.is_file()                                           # Remove all directories.
+            and not any(part.startswith('.') for part in item.parts)    # Remove hidden files and files in hidden folders.
+            and item.suffix not in EXCLUDED_SUFFIXES                    # Remove files with unwanted extensions.
+        ]
+
+    else:
+        files = [
+            item for item in path.rglob("*")                            # Get all files and directories.
+            if item.is_file()                                           # Remove all directories.
+            and not any(part.startswith('.') for part in item.parts)    # Remove hidden files and files in hidden folders.
+            and item.suffix in target_extensions                        # Remove files with unwanted extensions.
+        ]
 
     return files
