@@ -1,6 +1,5 @@
 """
-Output copy-paste-ready output in Markdown format, either in a file,
-or on the terminal.
+Return copy-paste-ready output in Markdown format.
 
 ## Main Function
 
@@ -26,6 +25,42 @@ or on the terminal.
     }
 """
 
-from typing import List, Dict
+from typing import List, Dict, Optional
+import os
 
-def generate_markdown_output(index_file_unreferenced_links: List, broken_links: Dict):
+def generate_markdown_report(
+        unreferenced_files: List[str],
+        broken_links: Optional[Dict] = None,
+        *,
+        main_index_file: str = "SUMMARY.md"
+    ):
+
+    markdown_output = []
+
+    # Unreferenced files in main index file.
+    markdown_output.append(
+        md_heading(f"Unreferenced files in {main_index_file}", 2)
+    )
+
+    if len(unreferenced_files) == 0:
+        markdown_output.append("**None**\n")
+
+    else:
+        for file in unreferenced_files:
+            markdown_output.append(
+                md_list_item_link(os.path.basename(file), file)
+            )
+
+    return "".join(markdown_output)
+
+def md_link(text: str, target: str) -> str:
+    return f"[{text}]({target})"
+
+def md_heading(text: str, level: int = 2) -> str:
+    return f"\n{'#' * level} {text}\n\n"
+
+def md_list_item(text: str) -> str:
+    return f"+ {text}\n"
+
+def md_list_item_link(text: str, target: str) -> str:
+    return md_list_item(md_link(text, target))
