@@ -25,9 +25,9 @@ def extract_links_from_file(file: Union[str, Path]) -> List[Tuple[str, str]]:
     
     :param file: A string or pathlib.Path object representing the file to extract links from.
     :return: A list of tuples with this format: (link_text, link).
+    :raises ValueError: If `file` is not str or pathlib.Path.
     """
 
-    # Check parameter type.
     if not isinstance(file, (str, Path)):
         raise ValueError("Expected str or pathlib.Path for `file`.")
 
@@ -46,13 +46,12 @@ def read_file(file: Path) -> str:
 
     :param file: A pathlib.Path object representing the file to read.
     :return: A string containing the contents of the given file.
+    :raises FileNotFoundError: If `file` does not exist.
     """
 
-    # Confirm the file exists.
     if not file.is_file():
         raise FileNotFoundError(f"File not found: {file}")
 
-    # Read and return file contents.
     return file.read_text(encoding = "utf-8")
 
 def extract_links_from_text(text: str) -> List[Tuple[str, str]]:
@@ -75,13 +74,18 @@ def extract_links_from_text(text: str) -> List[Tuple[str, str]]:
         for child in children_iter:
             # Get section links and links to text files.
             if child.type == "link_open":
-                link = child.attrGet("href")
-                if not link: continue
+                link_target = child.attrGet("href")
+                if not link_target: continue
                 
                 text_token = next(children_iter, None)
-                text = text_token.content.strip() if text_token and text_token.type == "text" else "no link text"
+                link_text = (
+                    text_token.content.strip()
+                    if text_token
+                    and text_token.type == "text"
+                    else "no link text"
+                )
 
-                links.append((text, link))
+                links.append((link_text, link_target))
 
             # Get image links.
             elif child.type == "image":
