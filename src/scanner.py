@@ -1,17 +1,16 @@
 """
 Add these features:
-    1. Raise an error if the given path does not exist.
-    2. Have an option to return only the link target without the link text.
+    1. Have an option to return only the link target without the link text.
 """
 
 from pathlib import Path
-from typing import Union, List, Tuple, Optional
+from typing import Union, List, Optional, Iterable
 
 EXCLUDED_SUFFIXES = (".bin", ".img")
 
 def get_human_readable_files(
         path: Union[str, Path],
-        target_extensions: Optional[Tuple[str]] = None
+        target_extensions: Optional[Iterable[str]] = None
     ) -> List[Path]:
     """
     Return a list of human-readable files under the given path.
@@ -19,33 +18,34 @@ def get_human_readable_files(
     Only includes:
     + Regular files (no directories).
     + Non-hidden files (no dotfiles or files in hidden folders like '.git').
-    + Files with extensions not in the EXCLUDED_SUFFIXES tuple.
+    + Files with extensions not in EXCLUDED_SUFFIXES.
 
-    :param path: A string or pathlib.Path object representing the repository's root directory.
+    :param path: A string or pathlib.Path object representing the path to search.
+    :param target_extensions: Optional iterable of file extensions to include (e.g., {".md", ".txt"}).
     :return: List of pathlib.Path objects.
+    :raises FileNotFoundError: If the given path does not exist.
+    :raises ValueError: If `path` is not a str or pathlib.Path.
     """
 
-    # Check parameter type.
     if not isinstance(path, (str, Path)):
         raise ValueError("Expected str or pathlib.Path for `path`.")
-
-    # Get human-readable files.
+    
     path = Path(path)
 
-    if target_extensions == None:
-        files = [
-            item for item in path.rglob("*")                            # Get all files and directories.
-            if item.is_file()                                           # Remove all directories.
-            and not any(part.startswith('.') for part in item.parts)    # Remove hidden files and files in hidden folders.
-            and item.suffix not in EXCLUDED_SUFFIXES                    # Remove files with unwanted extensions.
-        ]
+    if not path.exists():
+        raise FileNotFoundError(f"Path does not exist: {path}")
 
-    else:
-        files = [
-            item for item in path.rglob("*")                            # Get all files and directories.
-            if item.is_file()                                           # Remove all directories.
-            and not any(part.startswith('.') for part in item.parts)    # Remove hidden files and files in hidden folders.
-            and item.suffix in target_extensions                        # Remove files with unwanted extensions.
-        ]
+    # Normalize extensions for case-insensitive matching.
+    excluded = {ext.lower() for ext in EXCLUDED_SUFFIXES}
+    allowed = {ext.lower() for ext in target_extensions} if target_extensions else None
+
+    # Get human-readable files.
+    files = [
+        item for item in path.rglob("*")
+        if item.is_file()
+        and not any(part.startswith('.') for part in item.parts)
+        and item.suffix.lower() not in excluded
+        and (allowed is None or item.suffix.lower() in allowed)
+    ]
 
     return files
