@@ -1,8 +1,3 @@
-"""
-Add these features:
-    1. Have an option to return only the link target without the link text.
-"""
-
 from pathlib import Path
 from typing import Union, List, Optional, Iterable
 
