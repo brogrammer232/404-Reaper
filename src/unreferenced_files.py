@@ -55,7 +55,7 @@ def get_unreferenced_files(index_file: Union[str, Path], recursive: bool = True)
     # Extract link targets from the index file and normalize them.
     referenced_links = [
             normalize_link_target(link[-1])
-            for link in extract_links_from_file(index_file)
+            for link in extract_links_from_file(index_file)["file links"]
         ]
 
     # Get files that exist locally but are not referenced in the index file.
