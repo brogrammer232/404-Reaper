@@ -16,10 +16,11 @@ Example:
 """
 
 from markdown_it import MarkdownIt
+from urllib.parse import urlparse
 from pathlib import Path
-from typing import Union, List, Tuple
+from typing import Union
 
-def extract_links_from_file(file: Union[str, Path]) -> List[Tuple[str, str]]:
+def extract_links_from_file(file: Union[str, Path]) -> list[tuple[str, str]]:
     """
     Extract and return links from the given file.
     
@@ -38,7 +39,10 @@ def extract_links_from_file(file: Union[str, Path]) -> List[Tuple[str, str]]:
     # Extract links from markdown text.
     links = extract_links_from_text(file_contents)
 
-    return links
+    # Separate section links from file links.
+    links_dict = separate_links(links)
+
+    return links_dict
 
 def read_file(file: Path) -> str:
     """
@@ -54,7 +58,7 @@ def read_file(file: Path) -> str:
 
     return file.read_text(encoding = "utf-8")
 
-def extract_links_from_text(text: str) -> List[Tuple[str, str]]:
+def extract_links_from_text(text: str) -> list[tuple[str, str]]:
     """
     Extract links from the given text.
 
@@ -95,3 +99,37 @@ def extract_links_from_text(text: str) -> List[Tuple[str, str]]:
                 links.append((alt, src))
 
     return links
+
+def separate_links(links_list: list[tuple[str, str]]
+    ) -> dict[str, list[tuple[str, str]]]:
+    """
+    Separate links into categories: 'section links' and 'file links'.
+
+    :param links_list: A list of (link_text, link_target) tuples.
+    :return: A dictionary mapping category names to lists of link tuples.
+    """
+
+    SECTION_LINKS_KEY = "section links"
+    FILE_LINKS_KEY = "file links"
+
+    links_dict = {
+        SECTION_LINKS_KEY: [],
+        FILE_LINKS_KEY: []
+    }
+
+    for link_text, link_target in links_list:
+        link_target = link_target.strip()
+
+        # Section links
+        if link_target.startswith("#"):
+            links_dict[SECTION_LINKS_KEY].append((link_text, link_target))
+            continue
+    
+        # Skip external links
+        parsed = urlparse(link_target)
+        if parsed.scheme: continue
+
+        links_dict[FILE_LINKS_KEY].append((link_text, link_target))
+
+    return links_dict
+
